@@ -1,0 +1,51 @@
+# hMT+_GaglianeseA./FernandesF._2019
+
+Code to download data and generate figures from _____________________________
+
+This repository is associated with the publication below.
+Gaglianese, Fernandes (2019). 
+
+The code downloads the data from the project page (.... or doi:...) and then reproduces the main figures in this work, as well as some supplementary figures.
+
+The code runs in Matlab and was written and tested using Matlab2013a and Matlab 2016a on Debian GNU/Linux 8 on MATE Desktop Environment 1.8.1.
+
+Dependencies: 
+ mrTools
+ Matlab2013a
+ Outputs of specific scripts:
+	-
+	-
+	-
+	
+
+To use the code, download or clone this github repository, go to the repository in the Matlab command window. Example usage below: 
+ % Navigate to the correct folder and add the paths 
+ addpath(genpath(pwd))
+ 
+ % Download the data (this only needs to be done once) 
+ fmrihmt_downloadData();
+ 
+ % Make the figures 
+
+% **SCRIPTX IMPORTANT NOTES**   
+% 1) SCRIPTX takes a little while to run (about X hour/minutes in the RIBS system). 
+% 2) SCRIPTX saves ~X GB of simulated data. 
+% 3) SCRIPTX is required for all following scripts. 
+
+example1.m  
+example2.m  
+
+% **SCRIPTY IMPORTANT NOTES**   
+% 1) SCRIPTY takes a long time to run (~Y hours in the RIBS system), and does this.  
+% 2) SCRIPTY saves ~Y GB of simulated data.  
+% 3) SCRIPTY is required for all following scripts. 
+
+example1.m  
+example2.m  
+example3.m
+example4.m
+example5.m
+
+Code (c) Francisco Fernandes and Anna Gaglianese
+
+Please direct any comments about the code via the issues page associated with this GitHub repository, or via email to f[dot]guerreirofernandes[dash]2[at]umcutrecht[dot]nl
