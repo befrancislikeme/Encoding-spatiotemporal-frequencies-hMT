@@ -87,20 +87,21 @@ switch pValue
 end
 %% Setting up loading and saving Paths
 % Setting up complete paths for the /erAnal.mat and /erCutoffER.mat
-hrfInput.erAnal.Path        = [fmrihmt_RootPath(), '/analysis/', subCode, '/deconv/',mrtoolsGroupName,'/erAnal/',erAnalName,'.mat'];
-hrfInput.erCutoff.Path      = [fmrihmt_RootPath(), '/analysis/', subCode, '/deconv/',mrtoolsGroupName,'/erAnal/',erCutoffName,'.mat'];
+hrfInput.erAnal.Path        = [fmrihmt_RootPath(), '/analysis/', subCode, '/deconv/',mrtoolsGroupName,'/',erAnalName,'/',erAnalName,'.mat'];
+hrfInput.erCutoff.Path      = [fmrihmt_RootPath(), '/analysis/', subCode, '/deconv/',mrtoolsGroupName,'/',erAnalName,'/',erCutoffName,'.mat'];
 
 % Setting up complete paths for the extracted HRF
-hrfOutput.saveName          = ['sub-', subCode, '_hrf_',pValueOut,'_',datestr(now,30)];
+hrfOutput.saveName          = ['sub-', subCode, '_hrf_',erAnalName,'-',pValueOut,'_',datestr(now,30)];
 hrfOutput.savePath          = [fmrihmt_RootPath,'/analysis/',subCode,'/deconv/Extracted HRF/'];
 
 % Setting up complete paths for mrTools required structures
-mrSession.Path              = [fmrihmt_RootPath, '/analysis/', subCode, '/deconv/'];
-hrfInput.BrainLocMask.Path  = [fmrihmt_RootPath, '/analysis/', subCode, '/deconv/ROIs/'];
-hrfInput.BrainLocMask.Name  = ['sub-',subCode,'_loc-BrainMask.mat'];
+mrSession.Path     = [fmrihmt_RootPath, '/analysis/', subCode, '/deconv/'];
+hrfInput.ROI.Path  = [fmrihmt_RootPath, '/analysis/', subCode, '/deconv/ROIs/'];
+% TODO: Change Mask to mask.mat
+hrfInput.ROI.Name  = 'MTL.mat';
 
-hrfInput.BrainLocMask.BrainLocMask = load(sprintf('%s%s', hrfInput.BrainLocMask.Path, hrfInput.BrainLocMask.Name ));
-hrfInput.BrainLocMask.BrainLocMask = hrfInput.BrainLocMask.BrainLocMask.(char(fieldnames(hrfInput.BrainLocMask.BrainLocMask)));
+hrfInput.ROI.ROI = load(sprintf('%s%s', hrfInput.ROI.Path, hrfInput.ROI.Name ));
+hrfInput.ROI.ROI = hrfInput.ROI.ROI.(char(fieldnames(hrfInput.ROI.ROI)));
 
 % mrSession    = load(sprintf('%s', mrTools.mrSession.Path ));
 % mrTools.mrSession.mrSession     = load(sprintf('%s', mrTools.mrSession.Path ));
@@ -130,44 +131,35 @@ end
 hrfInput.erAnal.erAnal = load(sprintf('%s', hrfInput.erAnal.Path));
 hrfInput.erAnal.erAnal = hrfInput.erAnal.erAnal.(char(fieldnames(hrfInput.erAnal.erAnal)));
 %% HRF Extraction
-hrfExtraction.Raw = loadROITSeries(v,hrfInput.BrainLocMask.Name,1:5,2);
+hrfExtraction.Raw = loadROITSeries(v,hrfInput.ROI.Name,1:5,2);
 
 for run = 1:5
     ind = 1;
     for vox = 1 :  size(hrfExtraction.Raw{run}.tSeries)
-        hrfExtraction.scanCoords(:,vox)       = hrfExtraction.Raw{run}.scanCoords(1:3,vox);
-        hrfAnalysis{run}.scanCoords(ind,:)    = hrfExtraction.scanCoords(:,vox);
-        hrfAnalysis{run}.tSeries(ind,:)       = hrfExtraction.Raw{run}.tSeries(vox,:);
-        hrfOutput.hrf.scanCoords{run}(:,ind)  = hrfExtraction.scanCoords(:,vox);
-        hrfOutput.hrf.Raw{run}(ind,:) = eventRelatedTSeries(...
-            hrfAnalysis{run}.tSeries(ind,:),...
+        % hrfAnalysis{run}.scanCoords(ind,:)  = hrfExtraction.Raw{run}.scanCoords(1:3,vox);
+        % hrfAnalysis{run}.tSeries(ind,:)       = hrfExtraction.Raw{run}.tSeries(vox,:);
+        hrfOutput.hrf.scanCoords{run}(:,ind)  = hrfExtraction.Raw{run}.scanCoords(1:3,vox);
+        hrfAnalysis.Raw{run}(ind,:) = eventRelatedTSeries(...
+            hrfExtraction.Raw{run}.tSeries(ind,:),...
             hrfInput.erAnal.erAnal.d{run}.nhdr,...
             hrfInput.erAnal.erAnal.d{run}.hdrlen,...
             hrfInput.erAnal.erAnal.d{run}.scm );
-        hrfOutput.hrf.Max(run,ind)          = max(smooth(hrfOutput.hrf.Raw{run}(ind,:).ehdr));
-        %
-        hrfOutput.hrf.tmp{run}(ind,:)       = hrfOutput.hrf.Raw{run}(ind,:).ehdr;
-        %
-        hrfOutput.hrf.ste{run}(ind,:)   = hrfOutput.hrf.Raw{run}(ind,:).ehdrste;
-        hrfOutput.hrf.Maxsigvalue(run,ind)  = hrfInput.erAnal.erAnal.overlays.data{run}(...
-            hrfExtraction.scanCoords(1,vox),...
-            hrfExtraction.scanCoords(2,vox),...
-            hrfExtraction.scanCoords(3,vox));
+        hrfOutput.hrf.Max(run,ind)          = max(smooth(hrfAnalysis.Raw{run}(ind,:).ehdr));
+        hrfOutput.hrf.ehdr{run}(ind,:)      = hrfAnalysis.Raw{run}(ind,:).ehdr;
+        hrfOutput.hrf.ehdrste{run}(ind,:)   = hrfAnalysis.Raw{run}(ind,:).ehdrste;
+        hrfOutput.hrf.r2value(run,ind)  = hrfInput.erAnal.erAnal.overlays.data{run}(...
+            hrfExtraction.Raw{run}.scanCoords(1,vox),...
+            hrfExtraction.Raw{run}.scanCoords(2,vox),...
+            hrfExtraction.Raw{run}.scanCoords(3,vox));
         
-        if  (hrfInput.erAnal.erAnal.overlays.data{run}(...
-                hrfExtraction.scanCoords(1,vox),...
-                hrfExtraction.scanCoords(2,vox),...
-                hrfExtraction.scanCoords(3,vox))...
+        if  (hrfOutput.hrf.r2value(run,ind)...
                 >= hrfInput.erCutoff.erCutoff{run}.r2cutoff.cutoffs(pValue)) && (hrfOutput.hrf.Max(run,ind) < 6)
-            hrfAnalysis{run}.Significance(ind) = 1;
             hrfOutput.hrf.Maxsig(run,ind) = hrfOutput.hrf.Max(run,ind);
             
         else
-            hrfAnalysis{run}.Significance(ind) = 0;
             hrfOutput.hrf.Maxsig(run,ind) = 0;
         end
         ind = ind+1;
-        %vox_total(sub,run) = ind;
     end
 end
 %% Saving HRF Matrix
@@ -175,7 +167,7 @@ cd(fmrihmt_RootPath)
 mrQuit
 
 deconvHRF = hrfOutput.hrf;
-save(sprintf('%s%s',hrfOutput.savePath, hrfOutput.saveName), 'deconvHRF')
+save(sprintf('%s%s',hrfOutput.savePath, hrfOutput.saveName), 'deconvHRF', '-v7.3');
 fprintf('\nThe extracted HRF was saved to the path:\n%s\n\n Under the Name:\n%s\n',hrfOutput.savePath,hrfOutput.saveName);
 
 return

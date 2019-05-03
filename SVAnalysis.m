@@ -19,7 +19,7 @@ createMatROI('V4493','roi_RMT_resampled','right','BON001');
 %%HRF EXTRACTION
 % Extract the HRFs for all runs and store them into a .mat file
 
-deconvHRF ('V4493',5,'PreProc','erAnal','cutoffER')
+deconvHRF ('V4493',5,'PreProc','erAnal','cutoffER');
 
 %%Testing deconvHRF
 
