@@ -18,11 +18,9 @@ hrfInput.loadNameSplit2          = ['sub-', subCode, '_hrf_',erAnalNameSplit2,'-
 
 hrfInput.loadPath          = [fmrihmt_RootPath,'/',subCode,'/deconv/Extracted_HRF/'];
 
-smOutput.saveName  = ['sub-', subCode, '_smQ0_',erAnalNameSplit1,'_',ROIname,'_',datestr(now,30)];
+smOutput.saveName  = ['sub-', subCode, '_smQ0_',erAnalNameSplit1,'_',ROIname];
 smOutput.savePath  = [fmrihmt_RootPath,'/',subCode,'/deconv/Extracted_HRF/'];
-list = dir(hrfInput.loadPath)
 
-load(sprintf('%s%s',hrfInput.loadPath, hrfInput.loadNameSplit1), 'deconvHRF');
 smInput.deconvHRFSplit1 = load(sprintf('%s%s',hrfInput.loadPath, hrfInput.loadNameSplit1), 'deconvHRF');
 smInput.deconvHRFSplit2 = load(sprintf('%s%s',hrfInput.loadPath, hrfInput.loadNameSplit2), 'deconvHRF');
 
@@ -60,7 +58,7 @@ for j = 1:size(smInput.deconvHRFSplit1.deconvHRF.Max,2)
 end
 
 
-save(sprintf('%s%s',smOutput.savePath, smOutput.saveName), 'estimatesQ0', 'varexp', 'FittedCurveQ0', '-v7.3');
+save(sprintf('%s%s',smOutput.savePath, smOutput.saveName), 'estimatesQ0', 'varexp', 'FittedCurveQ0', 'smInput.deconvHRFSplit1.deconvHRF.scanCoords', '-v7.3');
 fprintf('\nThe estimated speed model was saved to the path:\n%s\n\n Under the Name:\n%s\n',hrfOutput.savePath,hrfOutput.saveName);
 
 return
