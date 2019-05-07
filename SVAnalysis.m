@@ -5,6 +5,8 @@
 clear all
 close all
 addpath(genpath('/Fridge/users/anna/fMRI_MT/MT_Exp2/'))
+addpath((genpath('/home/anna/Documents/afni_matlab/')))
+
 %%GATHERING DATA 
 % Collecting .PAR .REC format data from the RIBS LIBRARY converting it into 
 % Nifti format and organizing in the /dataset folder structure.
@@ -31,9 +33,7 @@ saveddateSplit1 = '20190503T152900';
 saveddateSplit2 = '20190506T144738';
 
 %change savedate and see if it works
-speedmodelHRFv2 ('V4493','erAnal_half1_24s','erAnal_half2_24s', 5, 'MTL',saveddateSplit1,saveddateSplit2)
-
-
+%speedmodelHRFv2 ('V4493','erAnal_half1_24s','erAnal_half2_24s', 5, 'MTL',saveddateSplit1,saveddateSplit2)
 
 %%CREATE NIFTI MAP
-% 
+model_results_into_nifti('V4493','4493','erAnal_half1_24s', 'MTL', 'speed_mask.nii')

@@ -57,8 +57,8 @@ for j = 1:size(smInput.deconvHRFSplit1.deconvHRF.Max,2)
      end
 end
 
-
-save(sprintf('%s%s',smOutput.savePath, smOutput.saveName), 'estimatesQ0', 'varexp', 'FittedCurveQ0', 'smInput.deconvHRFSplit1.deconvHRF.scanCoords', '-v7.3');
-fprintf('\nThe estimated speed model was saved to the path:\n%s\n\n Under the Name:\n%s\n',hrfOutput.savePath,hrfOutput.saveName);
+scanCoords = smInput.deconvHRFSplit1.deconvHRF.scanCoords{1};
+save(sprintf('%s%s',smOutput.savePath, smOutput.saveName), 'estimatesQ0', 'varexp', 'FittedCurveQ0', 'scanCoords', '-v7.3');
+fprintf('\nThe estimated speed model was saved to the path:\n%s\n\n Under the Name:\n%s\n',smOutput.savePath,smOutput.saveName);
 
 return
