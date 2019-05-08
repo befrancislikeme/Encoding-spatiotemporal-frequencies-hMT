@@ -5,7 +5,7 @@ smInput.loadPath          = [fmrihmt_RootPath,'/',subCode,'/deconv/Extracted_HRF
 
 smInput.results = load(sprintf('%s%s',smInput.loadPath, smInput.loadName));
 smInput.results.varexp((smInput.results.varexp<0))= 0;
-
+%TO do: add roi output dir
 [vol info] = BrikLoad([fmrihmt_RootPath,'/',subCode, '/output_dir/' ROInamenii]);
 output_name = ['fit_model_params_' erAnalNameSplit1 '_' ROIname ]
 MTpref = zeros( [ size(vol(:,:,:,1)) 3 ] );

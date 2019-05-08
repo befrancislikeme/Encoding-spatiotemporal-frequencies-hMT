@@ -33,7 +33,7 @@ saveddateSplit1 = '20190503T152900';
 saveddateSplit2 = '20190506T144738';
 
 %change savedate and see if it works
-%speedmodelHRFv2 ('V4493','erAnal_half1_24s','erAnal_half2_24s', 5, 'MTL',saveddateSplit1,saveddateSplit2)
+speedmodelHRFv2 ('V4493','erAnal_half1_24s','erAnal_half2_24s', 5, 'MTL',saveddateSplit1,saveddateSplit2)
 
 %%CREATE NIFTI MAP
-%model_results_into_nifti('V4493','4493','erAnal_half1_24s', 'MTL', 'speed_mask.nii')
+model_results_into_nifti('V4493','4493','erAnal_half1_24s', 'MTL', 'speed_mask.nii')

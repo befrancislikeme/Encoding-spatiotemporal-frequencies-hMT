@@ -60,7 +60,8 @@ if ~ischar(corrName)
 end
 
 roiOutput.savePath  = [fmrihmt_RootPath, '/analysis/', subCode, '/deconv/ROIs/'];
-roiOutput.saveName  = ['sub-', subCode, '_roi-', hemName, 'MT_',corrName,'_',datestr(now,30)];
+roiOutput.saveName  = ['sub-', subCode, '_roi-', hemName, 'MT_',corrName];
+%output_ROI dir 
 roiInput.loadPath   = [fmrihmt_RootPath,'/analysis/',subCode,'/output_dir/ROI_alignment/',roiName,'.nii'];
 % Allows for other path to be added in to the conversion function. 
 % roiInput.loadPath   = [fmrihmt_RootPath,'/analysis/',subCode,'/output_dir/',roiName,'.nii'];

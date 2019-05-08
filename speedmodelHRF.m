@@ -1,4 +1,4 @@
-function speedmodelHRF (subCode,erAnalNameSplit1,erAnalNameSplit2, pValue, ROIname,saveddate)
+function speedmodelHRFv2 (subCode,erAnalNameSplit1,erAnalNameSplit2, pValue, ROIname,saveddateSplit1,saveddateSplit2)
 %Model fitting 
 switch pValue
     % cutoff(1)= p<0.001; cutoff(2)= p<0.005; cutoff(3)= p<0.01; cutoff(5)= p<0.05
@@ -13,31 +13,16 @@ switch pValue
 end
 
 
-hrfInput.loadNameSplit1          = ['sub-', subCode, '_hrf_',erAnalNameSplit1,'-',pValueOut,'_',ROIname,'_',saveddate,'.mat'];
-hrfInput.loadNameSplit2          = ['sub-', subCode, '_hrf_',erAnalNameSplit2,'-',pValueOut,'_',ROIname,'_',saveddate,'.mat'];
+hrfInput.loadNameSplit1          = ['sub-', subCode, '_hrf_',erAnalNameSplit1,'-',pValueOut,'_',ROIname,'_', saveddateSplit1, '.mat'];
+hrfInput.loadNameSplit2          = ['sub-', subCode, '_hrf_',erAnalNameSplit2,'-',pValueOut,'_',ROIname,'_',saveddateSplit2,'.mat'];
 
 hrfInput.loadPath          = [fmrihmt_RootPath,'/',subCode,'/deconv/Extracted_HRF/'];
 
-smOutput.saveName  = ['sub-', subCode, '_smQ0_',erAnalNameSplit1,'_',ROIname,'_',datestr(now,30)];
+smOutput.saveName  = ['sub-', subCode, '_smQ0_',erAnalNameSplit1,'_',ROIname];
 smOutput.savePath  = [fmrihmt_RootPath,'/',subCode,'/deconv/Extracted_HRF/'];
 
-load(sprintf('%s%s',hrfInput.loadPath, hrfInput.loadNameSplit1), 'deconvHRF');
-
-
-   for vox = 1: size(deconvHRF.Max,2)
-%            MT_max_sig_half1{vox} = [nan deconvHRF.Maxsig(5,vox) nan; deconvHRF.Maxsig(3,vox) deconvHRF.Maxsig(2,vox)  deconvHRF.Maxsig(1,vox); nan deconvHRF.Maxsig(4,vox) nan];
-            MT_max_half1{vox} = [nan deconvHRF.Max(5,vox) nan; deconvHRF.Max(3,vox) deconvHRF.Max(2,vox)  deconvHRF.Max(1,vox); nan deconvHRF.Max(4,vox) nan];
-   end  
-clear deconvHRF
-   
-load(sprintf('%s%s',hrfInput.loadPath, hrfInput.loadNameSplit2), 'deconvHRF');
-
-
-   for vox = 1: size(deconvHRF.Max,2)
-%            MT_max_sig_half2{vox} = [nan deconvHRF.Maxsig(5,vox) nan; deconvHRF.Maxsig(3,vox) deconvHRF.Maxsig(2,vox)  deconvHRF.Maxsig(1,vox); nan deconvHRF.Maxsig(4,vox) nan];
-            MT_max_half2{vox} = [nan deconvHRF.Max(5,vox) nan; deconvHRF.Max(3,vox) deconvHRF.Max(2,vox)  deconvHRF.Max(1,vox); nan deconvHRF.Max(4,vox) nan];
-   end  
-clear deconvHRF
+smInput.deconvHRFSplit1 = load(sprintf('%s%s',hrfInput.loadPath, hrfInput.loadNameSplit1), 'deconvHRF');
+smInput.deconvHRFSplit2 = load(sprintf('%s%s',hrfInput.loadPath, hrfInput.loadNameSplit2), 'deconvHRF');
 
 %%
 sf = [0.2 0.33 1];
@@ -49,14 +34,21 @@ lower_point = [ 0.25; 0.2;  0.1; 0.2 ];
 upper_point = [10   ;  10  ;  1.2  ; 2  ];
 
 nsteps = 10;
-FittedCurveQ0 = cell(1,size(deconvHRF.Max,2));
-estimatesQ0 = zeros(size(deconvHRF.Max,2),6);
-varexp = zeros(size(deconvHRF.Max,2),1);
+FittedCurveQ0 = cell(1,size(smInput.deconvHRFSplit1.deconvHRF.Max,2));
+estimatesQ0 = zeros(size(smInput.deconvHRFSplit1.deconvHRF.Max,2),6);
+varexp = zeros(size(smInput.deconvHRFSplit1.deconvHRF.Max,2),1);
+MT_max_half1 = cell(1,size(smInput.deconvHRFSplit1.deconvHRF.Max,2));
+MT_max_half2 = cell(1,size(smInput.deconvHRFSplit2.deconvHRF.Max,2));
+ 
+for j = 1:size(smInput.deconvHRFSplit1.deconvHRF.Max,2)
+    
+     MT_max_half1{j} = [nan smInput.deconvHRFSplit1.deconvHRF.Max(5,j) nan; smInput.deconvHRFSplit1.deconvHRF.Max(3,j) smInput.deconvHRFSplit1.deconvHRF.Max(2,j)  smInput.deconvHRFSplit1.deconvHRF.Max(1,j); nan smInput.deconvHRFSplit1.deconvHRF.Max(4,j) nan];
 
-for j = 1:size(deconvHRF.Max,2)
      j
      [estimatesQ0(j,:)] = fitcurveSfTfAllTraining(sf, tf,MT_max_half1{j},lower_point,upper_point,0,nsteps);
      estimatesQ0(j,:)
+
+     MT_max_half2{j} = [nan smInput.deconvHRFSplit2.deconvHRF.Max(5,j) nan; smInput.deconvHRFSplit2.deconvHRF.Max(3,j) smInput.deconvHRFSplit2.deconvHRF.Max(2,j)  smInput.deconvHRFSplit2.deconvHRF.Max(1,j); nan smInput.deconvHRFSplit2.deconvHRF.Max(4,j) nan];
 
      if sum(estimatesQ0(j,:)) ~= 0 
      [varexp(j,1), FittedCurveQ0{j}] = fitcurveSfTfAllValidation(xdata, ydata,MT_max_half2{j},estimatesQ0(j,:));
@@ -65,8 +57,8 @@ for j = 1:size(deconvHRF.Max,2)
      end
 end
 
-
-save(sprintf('%s%s',smOutput.savePath, smOutput.saveName), 'estimatesQ0', 'varexp', 'FittedCurveQ0', '-v7.3');
-fprintf('\nThe estimated speed model was saved to the path:\n%s\n\n Under the Name:\n%s\n',hrfOutput.savePath,hrfOutput.saveName);
+scanCoords = smInput.deconvHRFSplit1.deconvHRF.scanCoords{1};
+save(sprintf('%s%s',smOutput.savePath, smOutput.saveName), 'estimatesQ0', 'varexp', 'FittedCurveQ0', 'scanCoords', '-v7.3');
+fprintf('\nThe estimated speed model was saved to the path:\n%s\n\n Under the Name:\n%s\n',smOutput.savePath,smOutput.saveName);
 
 return
