@@ -24,8 +24,8 @@ addpath((genpath('/home/anna/Documents/afni_matlab/')))
 %%HRF EXTRACTION
 % Extract the HRFs for all runs and store them into a .mat file
 
-%deconvHRF('V8714',5,'PreProc','erAnal_half1_24s','cutoffER_half1_24s','Mask');
-%deconvHRF('V8714',5,'PreProc','erAnal_half2_24s','cutoffER_half2_24s','Mask');
+deconvHRF('V8714',5,'PreProc','erAnal_half1_24s','cutoffER_half1_24s','Mask','n');
+deconvHRF('V8714',5,'PreProc','erAnal_half2_24s','cutoffER_half2_24s','Mask','Y');
 
 %%MODEL FITTING
 
@@ -36,4 +36,4 @@ saveddateSplit2 = '20190506T144738';
 %speedmodelHRFv2 ('V4493','erAnal_half1_24s','erAnal_half2_24s', 5, 'MTL',saveddateSplit1,saveddateSplit2)
 
 %%CREATE NIFTI MAP
-model_results_into_nifti('V4493','4493','erAnal_half1_24s', 'MTL', 'speed_mask.nii')
+%model_results_into_nifti('V4493','4493','erAnal_half1_24s', 'MTL', 'speed_mask.nii')

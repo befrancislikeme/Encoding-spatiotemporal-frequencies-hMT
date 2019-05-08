@@ -1,4 +1,4 @@
-function deconvHRF (subCode,pValue,mrtoolsGroupName,erAnalName,erCutoffName, ROIname)
+function deconvHRF (subCode,pValue,mrtoolsGroupName,erAnalName,erCutoffName, ROIname, erCutoffChoice)
 % Function to extract the HRF for all the voxels on the field of view
 % of all the runs for a specific patient.
 % The HRF, the HRF maximum, the HRF maximum when significant and the standard
@@ -99,7 +99,6 @@ hrfOutput.savePath          = [fmrihmt_RootPath,'/',subCode,'/deconv/Extracted_H
 % Setting up complete paths for mrTools required structures
 mrSession.Path     = [fmrihmt_RootPath, '/', subCode, '/deconv/'];
 hrfInput.ROI.Path  = [fmrihmt_RootPath, '/', subCode, '/deconv/ROIs/'];
-% TODO: Change Mask to mask.mat
 
 hrfInput.ROI.ROI = load(sprintf('%s%s', hrfInput.ROI.Path, hrfInput.ROI.Name ));
 hrfInput.ROI.ROI = hrfInput.ROI.ROI.(char(fieldnames(hrfInput.ROI.ROI)));
@@ -109,8 +108,8 @@ hrfInput.ROI.ROI = hrfInput.ROI.ROI.(char(fieldnames(hrfInput.ROI.ROI)));
 cd(mrSession.Path)
 v = newView;
 %% Calculating/Loading efCutoff and erAnal
+%%TO DO: check if n if exits 
 %erCutoffChoice = input(sprintf('Do you want to recalculate the R2 cutoff for subject %s subsampled data? [Y/n]\n', subCode),'s');
-erCutoffChoice = 'Y';
 if isequal(erCutoffChoice,'Y');
     
     hrfInput.erCutoff.erCutoff = erCutoff(1:5,mrtoolsGroupName,erAnalName,'saveEhdr=0','saveAnalysis=0','numRepeats=10','saveDist=1');
